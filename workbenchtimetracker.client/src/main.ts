@@ -1,3 +1,5 @@
+/// <reference types="@angular/localize" />
+
 import { platformBrowser, BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 
 import { HttpClientModule } from '@angular/common/http';
