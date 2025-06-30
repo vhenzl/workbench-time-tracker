@@ -1,0 +1,6 @@
+@WorkbenchTimeTracker.Server_HostAddress = http://localhost:5266
+
+GET {{WorkbenchTimeTracker.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
