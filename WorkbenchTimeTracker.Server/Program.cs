@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using WorkbenchTimeTracker.Server.Domain;
 using WorkbenchTimeTracker.Server.Infrastructure.Persistence;
+using WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<TimeTrackerDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
+
+
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 var app = builder.Build();
 
