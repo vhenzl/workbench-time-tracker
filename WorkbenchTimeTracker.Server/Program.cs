@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using WorkbenchTimeTracker.Server.Application.BuildingBlocks;
 using WorkbenchTimeTracker.Server.Domain;
 using WorkbenchTimeTracker.Server.Infrastructure.Persistence;
 using WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories;
+using WorkbenchTimeTracker.Server.Infrastructure.Processing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,18 @@ builder.Services.AddDbContext<TimeTrackerDbContext>(options => options.UseSqlSer
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+builder.Services.Scan(scan => scan
+        .FromEntryAssembly()
+        .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
+        .AsImplementedInterfaces()
+        .WithScopedLifetime()
+);
+builder.Services.Decorate(
+    typeof(ICommandHandler<,>),
+    typeof(UnitOfWorkCommandHandlerDecorator<,>)
+);
 
 
 var app = builder.Build();
