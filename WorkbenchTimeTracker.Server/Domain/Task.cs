@@ -39,7 +39,7 @@
         {
             var record = _timeRecords.FirstOrDefault(x => x.Id == timeRecordId);
             if (record == null)
-                throw new BusinessException("Time record cannot be updated because it does not exist.");
+                throw new NotFoundException($"Time record {timeRecordId} not found in task {Id} and cannot be updated.");
 
             if (_timeRecords.Any(x => x.Id != timeRecordId && x.PersonId == person.Id && x.Date == date))
                 throw new BusinessException("A time record for this person and date already exists for this task.");
@@ -51,7 +51,7 @@
         {
             var record = _timeRecords.FirstOrDefault(x => x.Id == timeRecordId);
             if (record == null)
-                throw new BusinessException("Time record cannot be deleted because it does not exist.");
+                throw new NotFoundException($"Time record {timeRecordId} not found in task {Id} and cannot be deleted.");
             _timeRecords.Remove(record);
         }
     }

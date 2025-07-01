@@ -10,7 +10,7 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
     {
         public async Task<Domain.Task> GetAsync(Guid id)
         {
-            return await FindAsync(id) ?? throw new BusinessException($"Task {id} not found.");
+            return await FindAsync(id) ?? throw new NotFoundException($"Task {id} not found.");
         }
 
         public Task<Domain.Task?> FindAsync(Guid id)
@@ -22,7 +22,7 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
 
         public async Task<Domain.Task> GetByTimeRecordAsync(Guid timeRecordId)
         {
-            return await FindByTimeRecordAsync(timeRecordId) ?? throw new BusinessException($"Task for TimeRecord {timeRecordId} not found.");
+            return await FindByTimeRecordAsync(timeRecordId) ?? throw new NotFoundException($"Task for TimeRecord {timeRecordId} not found.");
         }
 
         public Task<Domain.Task?> FindByTimeRecordAsync(Guid timeRecordId)

@@ -10,7 +10,7 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
     {
         public async Task<Person> GetAsync(Guid id)
         {
-            return await FindAsync(id) ?? throw new BusinessException($"Person {id} not found.");
+            return await FindAsync(id) ?? throw new NotFoundException($"Person {id} not found.");
         }
 
         public Task<Person?> FindAsync(Guid id)
