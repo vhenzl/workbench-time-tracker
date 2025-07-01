@@ -16,6 +16,8 @@ builder.Services.AddDbContext<TimeTrackerDbContext>(options => options.UseSqlSer
 
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 var app = builder.Build();
 
