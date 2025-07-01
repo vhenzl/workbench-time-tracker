@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 
 interface WeatherForecast {
   date: string;
@@ -14,9 +14,9 @@ interface WeatherForecast {
     styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  public forecasts: WeatherForecast[] = [];
 
   ngOnInit() {
     this.getForecasts();
