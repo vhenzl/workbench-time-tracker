@@ -13,6 +13,12 @@ builder.Services.AddDbContext<TimeTrackerDbContext>(options => options.UseSqlSer
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TimeTrackerDbContext>();
+    DbInitializer.Seed(db);
+}
+
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
