@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using WorkbenchTimeTracker.Server.Application.BuildingBlocks;
 using WorkbenchTimeTracker.Server.Domain;
@@ -22,10 +23,20 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 builder.Services.Scan(scan => scan
+    .FromEntryAssembly()
+    .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+);
+builder.Services.Scan(scan => scan
         .FromEntryAssembly()
         .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
         .AsImplementedInterfaces()
         .WithScopedLifetime()
+);
+builder.Services.Decorate(
+    typeof(ICommandHandler<,>),
+    typeof(ValidatorCommandHandlerDecorator<,>)
 );
 builder.Services.Decorate(
     typeof(ICommandHandler<,>),
