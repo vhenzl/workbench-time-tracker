@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from '../layout/layout.component';
 import { PeopleResolver } from '../pages/people/people.resolver';
+import { TasksResolver } from '../pages/tasks/tasks.resolver';
 
 export const routes: Routes = [
   {
@@ -13,7 +14,11 @@ export const routes: Routes = [
         loadComponent: () => import('../pages/people/people.component').then(m => m.PeopleComponent),
         resolve: { state: PeopleResolver }
       },
-      { path: 'tasks', loadComponent: () => import('../pages/tasks/tasks.component').then(m => m.TasksComponent) },
+      {
+        path: 'tasks',
+        loadComponent: () => import('../pages/tasks/tasks.component').then(m => m.TasksComponent),
+        resolve: { state: TasksResolver }
+      },
       { path: 'tasks/:id', loadComponent: () => import('../pages/tasks/task-detail.component').then(m => m.TaskDetailComponent) },
     ]
   },
