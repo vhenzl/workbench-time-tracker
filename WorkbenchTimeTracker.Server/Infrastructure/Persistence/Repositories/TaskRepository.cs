@@ -32,6 +32,13 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
                         .FirstOrDefaultAsync(x => x.TimeRecordsForEf.Any(tr => tr.Id == timeRecordId));
         }
 
+        public Task<List<Domain.Task>> GetAllAsync()
+        {
+            return db.Tasks
+                        .Include(x => x.TimeRecordsForEf)
+                        .ToListAsync();
+        }
+
         public Task AddAsync(Domain.Task task)
         {
             db.Tasks.Add(task);

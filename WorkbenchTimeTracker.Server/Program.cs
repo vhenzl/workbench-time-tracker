@@ -25,6 +25,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.Scan(scan => scan
     .FromEntryAssembly()
+    .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+);
+
+builder.Services.Scan(scan => scan
+    .FromEntryAssembly()
     .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
     .AsImplementedInterfaces()
     .WithScopedLifetime()

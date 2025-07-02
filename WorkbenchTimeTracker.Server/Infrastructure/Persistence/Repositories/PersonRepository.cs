@@ -18,6 +18,16 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
             return db.People.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public Task<List<Person>> FindByIdsAsync(IEnumerable<Guid> ids)
+        {
+            return db.People.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
+        public Task<List<Person>> GetAllAsync()
+        {
+            return db.People.ToListAsync();
+        }
+
         public Task AddAsync(Person person)
         {
             db.People.Add(person);

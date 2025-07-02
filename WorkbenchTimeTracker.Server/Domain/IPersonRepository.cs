@@ -1,4 +1,5 @@
-﻿using AsyncTask = System.Threading.Tasks.Task;
+﻿using System;
+using AsyncTask = System.Threading.Tasks.Task;
 
 namespace WorkbenchTimeTracker.Server.Domain
 {
@@ -6,6 +7,8 @@ namespace WorkbenchTimeTracker.Server.Domain
     {
         Task<Person> GetAsync(Guid id);
         Task<Person?> FindAsync(Guid id);
+        Task<List<Person>> FindByIdsAsync(IEnumerable<Guid> ids);
+        Task<List<Person>> GetAllAsync();
         AsyncTask AddAsync(Person person);
         AsyncTask RemoveAsync(Person person);
     }
