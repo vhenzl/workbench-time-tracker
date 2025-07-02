@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using WorkbenchTimeTracker.Server.Application.BuildingBlocks;
 using WorkbenchTimeTracker.Server.Domain;
@@ -62,5 +63,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = exception switch
+        {
+            InvalidCommandException => StatusCodes.Status400BadRequest,
+            BusinessException => StatusCodes.Status409Conflict,
+            NotFoundException => StatusCodes.Status404NotFound,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        await context.Response.WriteAsJsonAsync(new { error = exception?.Message });
+    });
+});
 
 app.Run();
