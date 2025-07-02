@@ -1,14 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: '<router-outlet></router-outlet>',
 })
-export class AppComponent implements OnInit {
-
-  ngOnInit() {
-    console.log('Init AppComponent');
-  }
-
-  title = 'Workbench Time Tracker';
-}
+export class AppComponent { }
