@@ -22,10 +22,6 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Configurations
             builder.Property(x => x.CreatedAt).IsRequired();
 
             builder.Property(x => x.TaskId).IsRequired();
-            builder.HasOne<Domain.Task>()
-                .WithMany()
-                .HasForeignKey(x => x.TaskId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(x => x.PersonId).IsRequired();
             builder.HasOne<Person>()

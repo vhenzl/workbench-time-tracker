@@ -21,9 +21,9 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Configurations
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(typeof(TimeRecord), "_timeRecords")
+            builder.HasMany(x => x.TimeRecordsForEf)
                 .WithOne()
-                .HasForeignKey("TaskId")
+                .HasForeignKey(x => x.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Ignore(x => x.TimeRecords);

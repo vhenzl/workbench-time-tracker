@@ -16,7 +16,7 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
         public Task<Domain.Task?> FindAsync(Guid id)
         {
             return db.Tasks
-                        .Include(x => EF.Property<IEnumerable<TimeRecord>>(x, "_timeRecords"))
+                        .Include(x => x.TimeRecordsForEf)
                         .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -28,8 +28,8 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
         public Task<Domain.Task?> FindByTimeRecordAsync(Guid timeRecordId)
         {
             return db.Tasks
-                        .Include(x => EF.Property<IEnumerable<TimeRecord>>(x, "_timeRecords"))
-                        .FirstOrDefaultAsync(x => EF.Property<IEnumerable<TimeRecord>>(x, "_timeRecords").Any(tr => tr.Id == timeRecordId));
+                        .Include(x => x.TimeRecordsForEf)
+                        .FirstOrDefaultAsync(x => x.TimeRecordsForEf.Any(tr => tr.Id == timeRecordId));
         }
 
         public Task AddAsync(Domain.Task task)

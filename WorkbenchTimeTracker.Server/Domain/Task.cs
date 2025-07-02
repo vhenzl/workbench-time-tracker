@@ -8,7 +8,20 @@
         public Guid? AssigneeId { get; }
         public DateTime CreatedAt { get; }
 
-        private readonly List<TimeRecord> _timeRecords = new();
+        private List<TimeRecord> _timeRecords = new();
+
+        // For Entity Framework: mapped as navigation property, used in .Include()
+        public List<TimeRecord> TimeRecordsForEf
+        {
+            get => _timeRecords;
+            private set
+            {
+                _timeRecords.Clear();
+                if (value != null)
+                    _timeRecords.AddRange(value);
+            }
+        }
+
         public IReadOnlyCollection<TimeRecord> TimeRecords => _timeRecords.AsReadOnly();
 
         private Task(Guid id, string title, string description, Guid? assigneeId, DateTime createdAt)
