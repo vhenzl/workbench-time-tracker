@@ -84,8 +84,16 @@ app.UseExceptionHandler(errorApp =>
             NotFoundException => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
+        var errorMessage = exception switch
+        {
+            InvalidCommandException ex => string.Join(", ", ex.Errors),
+            BusinessException => exception.Message,
+            NotFoundException => exception.Message,
+            _ => "Unexpected error"
+        };
+        Console.WriteLine($"Error: {exception?.Message ?? "Unknown"}");
 
-        await context.Response.WriteAsJsonAsync(new { error = exception?.Message });
+        await context.Response.WriteAsJsonAsync(new { error = errorMessage });
     });
 });
 
