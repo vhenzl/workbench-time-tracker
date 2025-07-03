@@ -1,11 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TaskDetailRouteState } from './task-detail.resolver';
 import { Duration, secondsToDurationObj, timeStringToSeconds } from '../../utils/duration';
-import { Task } from '../../api/tasks-api.service';
+import { Task, TimeRecord } from '../../api/tasks-api.service';
 import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
 import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TimeRecordCreateModalComponent } from './time-record-create-modal.component';
 
 @Component({
   selector: 'app-task-detail',
@@ -39,7 +41,7 @@ import { Title } from '@angular/platform-browser';
             @if (state.task.timeRecords.length > 0) {
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <h4 class="mb-0">Time Records</h4>
-                <button class="btn btn-primary btn-sm" disabled>
+                <button class="btn btn-primary btn-sm" (click)="openCreateModal(state.task.assigneeId)">
                   <i class="bi bi-plus-lg me-1"></i>Record Time
                 </button>
               </div>
@@ -87,7 +89,7 @@ import { Title } from '@angular/platform-browser';
                 </div>
                 <h5 class="text-muted mb-2">No time records yet</h5>
                 <p class="text-muted mb-3">Start tracking time to see records here</p>
-                <button class="btn btn-primary" disabled>
+                <button class="btn btn-primary" (click)="openCreateModal(state.task.assigneeId)">
                   <i class="bi bi-plus-lg me-1"></i>Record Time
                 </button>
               </div>
@@ -122,6 +124,8 @@ import { Title } from '@angular/platform-browser';
 export class TaskDetailComponent implements OnInit {
   private title = inject(Title);
   private route = inject(ActivatedRoute);
+  private modalService = inject(NgbModal);
+  private router = inject(Router);
   state: TaskDetailRouteState = this.route.snapshot.data['state'];
 
   ngOnInit() {
@@ -142,5 +146,21 @@ export class TaskDetailComponent implements OnInit {
 
   duration(input: string): Duration {
     return secondsToDurationObj(timeStringToSeconds(input));
+  }
+
+  openCreateModal(assigneeId: string | null) {
+    const modalRef = this.modalService.open(TimeRecordCreateModalComponent, { centered: true });
+    const taskId = this.route.snapshot.paramMap.get('id');
+    modalRef.componentInstance.taskId = taskId;
+    modalRef.componentInstance.assigneeId = assigneeId;
+    modalRef.result
+      .then((createdTask: TimeRecord) => {
+        if (createdTask) {
+          this.router.navigate([createdTask.id], { relativeTo: this.route });
+        }
+      })
+      .catch(() => {
+        // Modal dismissed, do nothing
+      });
   }
 }
