@@ -5,7 +5,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-layout',
-  standalone: true,
   imports: [
     RouterOutlet,
     NgbCollapse,
