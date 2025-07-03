@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from '../layout/layout.component';
 import { PeopleResolver } from '../pages/people/people.resolver';
 import { TasksResolver } from '../pages/tasks/tasks.resolver';
+import { TaskDetailResolver } from '../pages/tasks/task-detail.resolver';
 
 export const routes: Routes = [
   {
@@ -19,7 +20,11 @@ export const routes: Routes = [
         loadComponent: () => import('../pages/tasks/tasks.component').then(m => m.TasksComponent),
         resolve: { state: TasksResolver }
       },
-      { path: 'tasks/:id', loadComponent: () => import('../pages/tasks/task-detail.component').then(m => m.TaskDetailComponent) },
+      {
+        path: 'tasks/:id',
+        loadComponent: () => import('../pages/tasks/task-detail.component').then(m => m.TaskDetailComponent),
+        resolve: { state: TaskDetailResolver }
+      },
     ]
   },
 ];
