@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TasksRouteState } from './tasks.resolver';
 import { type Duration, secondsToDurationObj, timeStringToSeconds } from '../../utils/duration';
 import { Task } from '../../api/tasks-api.service';
@@ -7,30 +7,39 @@ import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
 
 @Component({
   selector: 'app-tasks',
-  imports: [FormatDurationPipe],
+  imports: [FormatDurationPipe, RouterLink],
   template: `
     @switch (state.status) {
       @case ('ok') {
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Assignee</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (task of state.tasks; track task.id) {
-              <tr>
-                <td>{{ task.title }}</td>
-                <td>{{ task.description }}</td>
-                <td>{{ task.assigneeName }}</td>
-                <td>{{ totalDuration(task) | formatDuration }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+        <div class="list-group">
+          @for (task of state.tasks; track task.id) {
+            <a class="list-group-item" [routerLink]="['/tasks', task.id]">
+              <div class="d-flex align-items-start justify-content-between mb-1">
+                <div class="mb-0 fw-semibold flex-grow-1 me-3">
+                  {{ task.title }}
+                </div>
+                @if (task.assigneeName) {
+                  <small class="text-muted text-nowrap">
+                    <i class="bi bi-person me-1"></i>{{ task.assigneeName }}
+                  </small>
+                }
+              </div>
+
+              <div class="d-flex align-items-end justify-content-between">
+                @if (task.description) {
+                  <p class="mb-0 text-muted flex-grow-1 me-3">{{ task.description }}</p>
+                } @else {
+                  <div class="flex-grow-1"></div>
+                }
+                @if (totalDuration(task) | formatDuration; as formattedDuration) {
+                  <small class="fw-medium text-nowrap">
+                    <i class="bi bi-clock me-1"></i>{{ formattedDuration }}
+                  </small>
+                }
+              </div>
+            </a>
+          }
+        </div>
       }
       @case ('error') {
         <div class="alert alert-danger">
@@ -38,7 +47,12 @@ import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
         </div>
       }
     }
-  `
+  `,
+  styles: [`
+    .list-group-item:hover {
+      background-color: #f8f9fa;
+    }
+  `]
 })
 export class TasksComponent {
   private route = inject(ActivatedRoute);
