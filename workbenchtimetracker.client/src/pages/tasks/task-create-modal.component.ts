@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { Validators, ReactiveFormsModule, NonNullableFormBuilder } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TasksApiService, Task } from '../../api/tasks-api.service';
 
@@ -28,20 +28,28 @@ import { TasksApiService, Task } from '../../api/tasks-api.service';
             formControlName="title"
             [class.is-invalid]="form.get('title')?.invalid && form.get('title')?.touched"
           >
-          @if (form.get('title')?.errors?.['required']) {
+          @if (getValidationErrorMessage('title')) {
             <div class="invalid-feedback">
-              Title is required
+              {{ getValidationErrorMessage('title') }}
             </div>
           }
         </div>
         <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
+          <label for="description" class="form-label">
+            Description <small class="text-muted">(optional)</small>
+          </label>
           <textarea
             id="description"
             class="form-control"
             formControlName="description"
             rows="3"
+            [class.is-invalid]="form.get('description')?.invalid && form.get('description')?.touched"
           ></textarea>
+          @if (getValidationErrorMessage('description')) {
+            <div class="invalid-feedback">
+              {{ getValidationErrorMessage('description') }}
+            </div>
+          }
         </div>
       </div>
       <div class="modal-footer">
@@ -57,26 +65,34 @@ import { TasksApiService, Task } from '../../api/tasks-api.service';
   `
 })
 export class TaskCreateModalComponent {
-  form: FormGroup;
+  public modal = inject(NgbActiveModal);
+  private fb = inject(NonNullableFormBuilder);
+  private tasksApi = inject(TasksApiService);
+
   submitting = signal(false);
   error = signal<string | null>(null);
 
-  constructor(
-    private fb: FormBuilder,
-    public modal: NgbActiveModal,
-    private tasksApi: TasksApiService
-  ) {
-    this.form = this.fb.group({
-      title: ['', Validators.required],
-      description: ['']
-    });
-  }
+  validationMessages = {
+    title: {
+      required: 'Title is required',
+      maxlength: 'Title must be at most 200 characters'
+    },
+    description: {
+      maxlength: 'Description must be at most 1000 characters'
+    }
+  } as const;
+
+  form = this.fb.group({
+    title: ['', [Validators.required, Validators.maxLength(200)]],
+    description: ['', [Validators.maxLength(1000)]]
+  });
 
   onSubmit() {
     if (this.form.valid && !this.submitting()) {
       this.submitting.set(true);
       this.error.set(null);
-      this.tasksApi.postTask(this.form.value).subscribe({
+      // TODO: Review this getRawValue usage (form.value returns Partial<>)
+      this.tasksApi.postTask(this.form.getRawValue()).subscribe({
         next: (createdTask: Task) => {
           this.submitting.set(false);
           this.modal.close(createdTask);
@@ -87,5 +103,17 @@ export class TaskCreateModalComponent {
         }
       });
     }
+  }
+
+  getValidationErrorMessage(controlName: keyof typeof this.validationMessages): string | null {
+    const control = this.form.get(controlName);
+    if (control?.errors) {
+      for (const errorKey in this.validationMessages[controlName]) {
+        if (control.errors[errorKey]) {
+          return this.validationMessages[controlName][errorKey as keyof typeof this.validationMessages[typeof controlName]];
+        }
+      }
+    }
+    return null;
   }
 }
