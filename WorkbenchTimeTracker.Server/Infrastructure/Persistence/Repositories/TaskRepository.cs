@@ -36,6 +36,7 @@ namespace WorkbenchTimeTracker.Server.Infrastructure.Persistence.Repositories
         {
             return db.Tasks
                         .Include(x => x.TimeRecordsForEf)
+                        .OrderBy(x => x.CreatedAt)
                         .ToListAsync();
         }
 

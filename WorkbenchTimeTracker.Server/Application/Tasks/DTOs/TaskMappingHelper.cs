@@ -13,7 +13,7 @@
                 AssigneeName = task.AssigneeId.HasValue && personCache.TryGetValue(task.AssigneeId.Value, out var assigneeName)
                     ? assigneeName
                     : null,
-                TimeRecords = task.TimeRecords.Select(tr =>
+                TimeRecords = task.TimeRecords.OrderBy(x => x.Date).Select(tr =>
                     new TimeRecordDto
                     {
                         Id = tr.Id,
