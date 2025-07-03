@@ -23,7 +23,8 @@ export const routes: Routes = [
       {
         path: 'tasks/:id',
         loadComponent: () => import('../pages/tasks/task-detail.component').then(m => m.TaskDetailComponent),
-        resolve: { state: TaskDetailResolver }
+        resolve: { state: TaskDetailResolver },
+        runGuardsAndResolvers: 'paramsOrQueryParamsChange',
       },
     ]
   },

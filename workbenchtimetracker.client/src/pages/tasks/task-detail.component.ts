@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskDetailRouteState } from './task-detail.resolver';
 import { Duration, secondsToDurationObj, timeStringToSeconds } from '../../utils/duration';
@@ -8,6 +8,8 @@ import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TimeRecordCreateModalComponent } from './time-record-create-modal.component';
+import { map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-task-detail',
@@ -126,7 +128,14 @@ export class TaskDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private modalService = inject(NgbModal);
   private router = inject(Router);
-  state: TaskDetailRouteState = this.route.snapshot.data['state'];
+
+  state: TaskDetailRouteState = null!;
+
+  constructor() {
+    this.route.data.subscribe(data => {
+      this.state = data['state'] as TaskDetailRouteState;
+    });
+  }
 
   ngOnInit() {
     if (this.state.status === 'ok') {
@@ -154,9 +163,9 @@ export class TaskDetailComponent implements OnInit {
     modalRef.componentInstance.taskId = taskId;
     modalRef.componentInstance.assigneeId = assigneeId;
     modalRef.result
-      .then((createdTask: TimeRecord) => {
-        if (createdTask) {
-          this.router.navigate([createdTask.id], { relativeTo: this.route });
+      .then((createdTimeRecord: TimeRecord) => {
+        if (createdTimeRecord) {
+          this.router.navigate([], { queryParams: { new: createdTimeRecord.id } });
         }
       })
       .catch(() => {
