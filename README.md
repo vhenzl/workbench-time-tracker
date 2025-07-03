@@ -6,7 +6,7 @@ Built with .NET and Angular, it showcases modern web development.
 
 The backend demonstrates fundamental principles of Clean Architecture, SOLID, and other best practices by utilising the separation of concerns, dependency inversion, use cases, domain entities, and more. 
 
-The frontend demonstrates the current recommendations for Angular codebases, including standalone components, block template syntax, and reactive forms, and features a responsive UI powered by Bootstrap.
+The frontend demonstrates the current recommendations for Angular codebases, including standalone components, control flow template syntax, and reactive forms, and features a responsive UI powered by Bootstrap.
 
 ### Technologies Used
 
@@ -19,7 +19,7 @@ Frontend: Angular (v20), TypeScript, npm, Bootstrap 5, ng-bootstrap
 - Tests (unit and integration) for both the backend and frontend.
 - CI checks using GitHub Actions.
 - Proper code formatting and linting.
-- Full adoption of the CQRS pattern (e.g., replacing repositories and domain entities in queries with database views, raw SQL, and a lightweight mapper like Dapper).
+- Full adoption of the CQRS pattern (replacing repositories and domain entities in queries with database views, raw SQL, and a lightweight mapper like Dapper).
 - Authentication and authorisation (intentionally out of scope for this project).
 
 ### Local Setup
