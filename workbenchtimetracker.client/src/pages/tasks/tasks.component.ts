@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TasksRouteState } from './tasks.resolver';
 import { type Duration, secondsToDurationObj, timeStringToSeconds } from '../../utils/duration';
 import { Task } from '../../api/tasks-api.service';
 import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
 import { Title } from '@angular/platform-browser';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TaskCreateModalComponent } from './task-create-modal.component';
 
 @Component({
   selector: 'app-tasks',
@@ -12,6 +14,13 @@ import { Title } from '@angular/platform-browser';
   template: `
     @switch (state.status) {
       @case ('ok') {
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h2 class="flex-grow-1 me-3 mb-2">Tasks</h2>
+          <button class="btn btn-primary text-nowrap" (click)="openCreateModal()">
+            <i class="bi bi-plus me-1"></i>Add Task
+          </button>
+        </div>
+
         <div class="list-group">
           @for (task of state.tasks; track task.id) {
             <a class="list-group-item" [routerLink]="['/tasks', task.id]">
@@ -58,6 +67,8 @@ import { Title } from '@angular/platform-browser';
 export class TasksComponent implements OnInit {
   private title = inject(Title);
   private route = inject(ActivatedRoute);
+  private modalService = inject(NgbModal);
+  private router = inject(Router);
   state: TasksRouteState = this.route.snapshot.data['state'];
 
   ngOnInit() {
@@ -70,5 +81,18 @@ export class TasksComponent implements OnInit {
       .map(timeStringToSeconds)
       .reduce((sum: number, val: number) => sum + val, 0);
     return secondsToDurationObj(totalSeconds);
+  }
+
+  openCreateModal() {
+    const modalRef = this.modalService.open(TaskCreateModalComponent, { centered: true });
+    modalRef.result
+      .then((createdTask: Task) => {
+        if (createdTask) {
+          this.router.navigate([createdTask.id], { relativeTo: this.route });
+        }
+      })
+      .catch(() => {
+        // Modal dismissed, do nothing
+      });
   }
 }

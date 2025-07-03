@@ -20,6 +20,12 @@ export interface Task {
     timeRecords: TimeRecord[];
 }
 
+interface PostTaskData {
+  title: string;
+  description?: string | null;
+  assigneeId?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TasksApiService {
   private readonly apiUrl = '/api/tasks';
@@ -32,5 +38,9 @@ export class TasksApiService {
 
   getTask(id: string): Observable<Task> {
     return this.http.get<Task>(`${this.apiUrl}/${id}`);
+  }
+
+  postTask(task: PostTaskData): Observable<Task> {
+    return this.http.post<Task>(this.apiUrl, task);
   }
 }
