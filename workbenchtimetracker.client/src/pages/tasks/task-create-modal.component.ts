@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Validators, ReactiveFormsModule, NonNullableFormBuilder } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TasksApiService, Task } from '../../api/tasks-api.service';
+import { PeopleApiService, Person } from '../../api/people-api.service';
 
 @Component({
   selector: 'app-task-create-modal',
@@ -51,6 +52,21 @@ import { TasksApiService, Task } from '../../api/tasks-api.service';
             </div>
           }
         </div>
+        <div class="mb-3">
+          <label for="assignee" class="form-label">
+            Assignee <small class="text-muted">(optional)</small>
+          </label>
+          <select
+            id="assignee"
+            class="form-select"
+            formControlName="assigneeId"
+          >
+            <option value="">(Unassigned)</option>
+            @for (person of people(); track person.id) {
+              <option [value]="person.id">{{ person.name }}</option>
+            }
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()" [disabled]="submitting()">Cancel</button>
@@ -68,9 +84,11 @@ export class TaskCreateModalComponent {
   public modal = inject(NgbActiveModal);
   private fb = inject(NonNullableFormBuilder);
   private tasksApi = inject(TasksApiService);
+  private peopleApi = inject(PeopleApiService);
 
   submitting = signal(false);
   error = signal<string | null>(null);
+  people = signal<Person[]>([]);
 
   validationMessages = {
     title: {
@@ -84,15 +102,37 @@ export class TaskCreateModalComponent {
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(200)]],
-    description: ['', [Validators.maxLength(1000)]]
+    description: ['', [Validators.maxLength(1000)]],
+    assigneeId: [''],
   });
+
+  ngOnInit() {
+    this.form.disable();
+    this.peopleApi.getPeople().subscribe({
+      next: people => {
+        this.people.set(people);
+        this.form.enable();
+      },
+      error: () => {
+        this.people.set([]);
+        this.error.set('Failed to load people.');
+      }
+    });
+  }
 
   onSubmit() {
     if (this.form.valid && !this.submitting()) {
       this.submitting.set(true);
       this.error.set(null);
+      this.form.disable();
+
       // TODO: Review this getRawValue usage (form.value returns Partial<>)
-      this.tasksApi.postTask(this.form.getRawValue()).subscribe({
+      const formValue = this.form.getRawValue();
+      const payload = {
+        ...formValue,
+        assigneeId: formValue.assigneeId || null,
+      };
+      this.tasksApi.postTask(payload).subscribe({
         next: (createdTask: Task) => {
           this.submitting.set(false);
           this.modal.close(createdTask);
@@ -100,6 +140,7 @@ export class TaskCreateModalComponent {
         error: (err) => {
           this.submitting.set(false);
           this.error.set('Failed to create task. ' + err?.error?.error);
+          this.form.enable();
         }
       });
     }
