@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TasksRouteState } from './tasks.resolver';
 import { type Duration, secondsToDurationObj, timeStringToSeconds } from '../../utils/duration';
 import { Task } from '../../api/tasks-api.service';
 import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-tasks',
@@ -54,9 +55,14 @@ import { FormatDurationPipe } from '../../pipes/format-duration.pipe';
     }
   `]
 })
-export class TasksComponent {
+export class TasksComponent implements OnInit {
+  private title = inject(Title);
   private route = inject(ActivatedRoute);
   state: TasksRouteState = this.route.snapshot.data['state'];
+
+  ngOnInit() {
+    this.title.setTitle('Tasks | Time Tracker');
+  }
 
   totalDuration(input: Task): Duration {
     const totalSeconds = input.timeRecords

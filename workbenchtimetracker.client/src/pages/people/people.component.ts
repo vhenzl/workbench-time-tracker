@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { type PeopleRouteState } from './people.resolver';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-people',
@@ -28,7 +29,12 @@ import { type PeopleRouteState } from './people.resolver';
     }
   `
 })
-export class PeopleComponent {
+export class PeopleComponent implements OnInit {
+  private title = inject(Title);
   private route = inject(ActivatedRoute);
   state: PeopleRouteState = this.route.snapshot.data['state'];
+
+  ngOnInit() {
+    this.title.setTitle('People | Time Tracker');
+  }
 }
