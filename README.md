@@ -10,7 +10,7 @@ The frontend demonstrates the current recommendations for Angular codebases, inc
 
 ### Technologies Used
 
-Backend: .NET 9, ASP.NET Core, Entity Framework, Scrutor, MS SQL Server
+Backend: .NET 9, ASP.NET Core, Entity Framework, MS SQL Server, Scrutor, FluentValidation
 
 Frontend: Angular (v20), TypeScript, npm, Bootstrap 5, ng-bootstrap
 
